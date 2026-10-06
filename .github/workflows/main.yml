@@ -1,0 +1,26 @@
+name: Pobierz oferty Quest 3
+
+on:
+  schedule:
+    - cron: "37 4 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  pobierz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: mkdir -p data && python pobierz.py
+      - name: Zapisz wynik
+        run: |
+          git config user.name "olx-bot"
+          git config user.email "olx-bot@users.noreply.github.com"
+          git add data/oferty.json
+          git commit -m "Oferty $(date -u +%F)" || echo "Bez zmian"
+          git push
